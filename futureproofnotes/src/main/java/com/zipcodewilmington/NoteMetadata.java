@@ -5,7 +5,7 @@ import java.util.List;
 
 
 public class NoteMetadata {
- 
+
     private String title;
     private LocalDateTime created;
     private LocalDateTime modified;
