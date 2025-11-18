@@ -28,6 +28,16 @@ public class NoteMetadata {
     public LocalDateTime getModified() { return modified; }
     public void setModified(LocalDateTime modified) { this.modified = modified; }
 
+    public List<String> getTags() { return tags; }
+    public void setTags(List<String> tags) { this.tags = tags; }
+
+    public String getAuthor() { return author;} 
+    public void setAuthor(String author) { this.author = author;}
     
+    public String getStatus() { return status;}
+    public void setStatus(String status) { this.status = status;}
+
+    public int getPriority() { return priority; }
+    public void setPriority(int priority) { this.priority = priority; }
 
 }
