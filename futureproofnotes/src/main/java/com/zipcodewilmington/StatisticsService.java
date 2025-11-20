@@ -13,7 +13,7 @@ public class StatisticsService {
 
     public StatisticsService(NoteRepository repository) {
         this.repository = repository; 
-    }
+    } 
 
     public int countNotes() {
         return 0;
@@ -38,6 +38,4 @@ public class StatisticsService {
     public Note newestnote() {
         return null;
     }
-
-
 }
