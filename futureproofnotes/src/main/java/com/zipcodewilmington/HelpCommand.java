@@ -1,5 +1,8 @@
 package com.zipcodewilmington;
 
-public class HelpCommand {
-    
+public class HelpCommand implements CLICommand {
+
+    @Override
+    public void execute(String[] args) {
+    }
 }

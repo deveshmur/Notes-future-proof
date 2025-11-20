@@ -1,7 +1,7 @@
 package com.zipcodewilmington;
 
 import java.time.LocalDateTime;
-import java.util.List; 
+import java.util.List;
 
 
 public class NoteMetadata {

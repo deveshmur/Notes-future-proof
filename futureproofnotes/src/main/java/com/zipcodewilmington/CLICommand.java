@@ -1,5 +1,5 @@
 package com.zipcodewilmington;
 
-public class CLICommand {
-    
+public interface CLICommand {
+    void execute(String[] args);
 }
