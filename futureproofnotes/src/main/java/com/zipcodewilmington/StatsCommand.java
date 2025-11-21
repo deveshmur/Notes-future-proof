@@ -10,6 +10,5 @@ public class StatsCommand implements CLICommand {
 
     @Override
     public void execute(String[] args) {
-        // display stats
     }
 }

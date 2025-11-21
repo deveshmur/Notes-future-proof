@@ -25,4 +25,10 @@ public class NotesConfig {
     public NoteService noteService(NoteRepository repository) {
         return new NoteService(repository);
     }
+
+    @Bean
+    public NoteSearchService noteSearchService(NoteService service) {
+        return new NoteSearchService(service);
+    }
+
 }

@@ -12,9 +12,12 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/notes")
 public class NotesController {
     private final NoteService service;
+    private final NoteSearchService searchService;
 
-    public NotesController(NoteService service) {
+
+    public NotesController(NoteService service, NoteSearchService searchService) {
         this.service = service;
+        this.searchService = searchService;
     }
 
     @GetMapping
@@ -24,6 +27,14 @@ public class NotesController {
                 .map(this::toDTO)
                 .collect(Collectors.toList());
     }
+
+    @GetMapping("/tag/{tag}")
+    public List<NoteDTO> searchByTag(@PathVariable String tag) {
+        return searchService.searchByTag(tag)
+                .stream()
+                .map(this::toDTO)
+                .collect(Collectors.toList());
+}
     
     @GetMapping("/{id}")
     public ResponseEntity<NoteDTO> getNoteById(@PathVariable String id) {
@@ -33,7 +44,7 @@ public class NotesController {
             return ResponseEntity.notFound().build();
         }
 
-        return ResponseEntity.ok(toDTO(note));
+        return ResponseEntity.ok(NoteMapper.toDTO(note));
     }
 
     @PostMapping
@@ -92,6 +103,14 @@ public class NotesController {
 
         return ResponseEntity.ok().build();
     }
+
+    @GetMapping("/search")
+    public List<NoteDTO> search(@RequestParam("q") String query) {
+        return searchService.searchByKeyword(query)
+                .stream()
+                .map(this::toDTO)
+                .collect(Collectors.toList());
+}
 
 
     private NoteDTO toDTO(Note note) {
