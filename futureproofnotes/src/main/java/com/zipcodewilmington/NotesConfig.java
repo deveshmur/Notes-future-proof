@@ -31,4 +31,9 @@ public class NotesConfig {
         return new NoteSearchService(service);
     }
 
+    @Bean
+    public NoteStatsService noteStatsService(NoteService noteService) {
+    return new NoteStatsService(noteService);
+}
+
 }
