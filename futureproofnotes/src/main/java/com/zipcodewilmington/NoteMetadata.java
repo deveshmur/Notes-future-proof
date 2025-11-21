@@ -12,7 +12,7 @@ public class NoteMetadata {
     private List<String> tags;
     private String author;
     private String status;
-    private int priority; 
+    private Integer priority; 
 
    
     public NoteMetadata() { 
@@ -37,7 +37,7 @@ public class NoteMetadata {
     public String getStatus() { return status;}
     public void setStatus(String status) { this.status = status;}
 
-    public int getPriority() { return priority; }
+    public Integer getPriority() { return priority; }
     public void setPriority(int priority) { this.priority = priority; }
 
 
