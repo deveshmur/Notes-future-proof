@@ -9,7 +9,7 @@
   <version>1.0</version>
 
   <name>futureproofnotes</name>
-  <url> ://www.example.com</url>
+  <url>://www.example.com</url>
 
           <properties>
               <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
