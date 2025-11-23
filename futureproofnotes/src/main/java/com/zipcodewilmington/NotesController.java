@@ -151,4 +151,22 @@ public ResponseEntity<String> exportNote(@PathVariable String id) {
     }
 
 
+    @GetMapping("/paged")
+    public List<NoteDTO> listPaged(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String sort) {
+
+        List<Note> notes;
+
+        if (sort != null && !sort.isBlank()) {
+            notes = service.listNotesPagedAndSorted(page, size, sort);
+        } else {
+            notes = service.listNotesPaged(page, size);
+        }
+
+        return notes.stream()
+                    .map(NoteMapper::toDTO)
+                    .toList();
+    }
 }

@@ -73,6 +73,43 @@ public class NoteService {
         return repository.loadAllNotes();
     }
 
+    public List<Note> listNotesPaged(int page, int size) {
+        List<Note> all = listNotes();
+
+        int from = page * size;
+        int to = Math.min(from + size, all.size());
+
+        if (from >= all.size()) {
+            return List.of();
+        }
+
+        return all.subList(from, to);
+    }
+
+    public List<Note> listNotesPagedAndSorted(int page, int size, String sortField) {
+
+        List<Note> all = listNotes();
+
+        if ("created".equalsIgnoreCase(sortField)) {
+            all.sort((a, b) -> a.getMetadata().getCreated().compareTo(b.getMetadata().getCreated()));
+        } else if ("modified".equalsIgnoreCase(sortField)) {
+            all.sort((a, b) -> a.getMetadata().getModified().compareTo(b.getMetadata().getModified()));
+        } else if ("title".equalsIgnoreCase(sortField)) {
+            all.sort((a, b) -> a.getMetadata().getTitle().compareToIgnoreCase(b.getMetadata().getTitle()));
+        }
+
+        int from = page * size;
+        int to = Math.min(from + size, all.size());
+
+        if (from >= all.size()) {
+            return List.of();
+        }
+
+        return all.subList(from, to);
+    }
+
+
+
 
     private void validateNewNote(Note note) {
         if (note== null || note.getMetadata() == null) {
