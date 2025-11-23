@@ -3,6 +3,7 @@ package com.zipcodewilmington;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class NoteSearchService {
 
@@ -11,6 +12,18 @@ public class NoteSearchService {
     public NoteSearchService(NoteService noteService) {
         this.noteService = noteService;
     }
+
+    public List<String> listAllTags() {
+        return noteService.listNotes()
+            .stream()
+            .flatMap(note -> {
+                List<String> tags = note.getMetadata().getTags();
+                return (tags == null) ? Stream.empty() : tags.stream();
+            })
+            .distinct()
+            .sorted()
+            .toList();
+}
 
     public List<Note> searchByKeyword(String keyword) {
         if (keyword == null || keyword.isBlank()) {

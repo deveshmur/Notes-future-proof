@@ -21,4 +21,9 @@ public class SearchController {
                 .map(NoteMapper::toDTO)
                 .collect(Collectors.toList());
     }
+
+    @GetMapping("/tags")
+    public List<String> getAllTags() {
+        return searchService.listAllTags();
+    }
 }

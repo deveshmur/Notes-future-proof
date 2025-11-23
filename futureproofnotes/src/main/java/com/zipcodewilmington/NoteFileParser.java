@@ -211,4 +211,32 @@ public class NoteFileParser {
         return value.replace("\n", " ").trim();
     }
 
+    public String toFullNoteString(Note note) {
+    StringBuilder sb = new StringBuilder();
+
+    sb.append("---\n");
+    sb.append("title: ").append(note.getMetadata().getTitle()).append("\n");
+    sb.append("created: ").append(note.getMetadata().getCreated()).append("\n");
+    sb.append("modified: ").append(note.getMetadata().getModified()).append("\n");
+
+    List<String> tags = note.getMetadata().getTags();
+    if (tags != null && !tags.isEmpty()) {
+        sb.append("tags: [").append(String.join(", ", tags)).append("]\n");
+    }
+
+    if (note.getMetadata().getAuthor() != null)
+        sb.append("author: ").append(note.getMetadata().getAuthor()).append("\n");
+
+    if (note.getMetadata().getStatus() != null)
+        sb.append("status: ").append(note.getMetadata().getStatus()).append("\n");
+
+    if (note.getMetadata().getPriority() != null)
+        sb.append("priority: ").append(note.getMetadata().getPriority()).append("\n");
+
+    sb.append("---\n\n");
+    sb.append(note.getBody() == null ? "" : note.getBody());
+
+    return sb.toString();
+}
+
 }
