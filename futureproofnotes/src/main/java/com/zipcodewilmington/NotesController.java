@@ -3,6 +3,10 @@ package com.zipcodewilmington;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+
 import java.time.ZoneOffset;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -19,6 +23,8 @@ public class NotesController {
         this.searchService = searchService;
     }
 
+    @Operation(summary = "Get all notes", description = "Returns a list of all notes stored in the system.")
+    @ApiResponse(responseCode = "200", description = "List returned successfully")
     @GetMapping
     public List<NoteDTO> listNotes() {
         return service.listNotes()
@@ -27,14 +33,22 @@ public class NotesController {
                 .collect(Collectors.toList());
     }
 
+   @Operation(summary = "Search notes by tag",
+           description = "Returns notes whose metadata contains the specified tag.")
+    @ApiResponse(responseCode = "200", description = "Notes returned successfully")
     @GetMapping("/tag/{tag}")
     public List<NoteDTO> searchByTag(@PathVariable String tag) {
         return searchService.searchByTag(tag)
                 .stream()
                 .map(this::toDTO)
                 .collect(Collectors.toList());
-}
+    }
     
+    @Operation(summary = "Get a note by ID", description = "Retrieves a specific note.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Note found"),
+            @ApiResponse(responseCode = "404", description = "Note not found")
+    })
     @GetMapping("/{id}")
     public ResponseEntity<NoteDTO> getNoteById(@PathVariable String id) {
         Note note = service.readNote(id);
@@ -46,6 +60,11 @@ public class NotesController {
         return ResponseEntity.ok(NoteMapper.toDTO(note));
     }
 
+    @Operation(summary = "Create a new note", description = "Creates a new note with metadata and body content.")
+        @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "Note created successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid note data")
+    })      
     @PostMapping
     public ResponseEntity<NoteDTO> createNote(@RequestBody CreateNoteRequest req) {
         Note note = new Note();
@@ -65,6 +84,11 @@ public class NotesController {
         return ResponseEntity.ok(toDTO(created));
     }
 
+    @Operation(summary = "Update a note", description = "Updates the fields of an existing note.")
+        @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Note updated"),
+            @ApiResponse(responseCode = "404", description = "Note not found")
+    })
     @PutMapping("/{id}")
     public ResponseEntity<NoteDTO> updateNote(
         @PathVariable String id,
@@ -92,7 +116,11 @@ public class NotesController {
 }
 
 
-
+    @Operation(summary = "Delete a note", description = "Deletes a note permanently.")
+        @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "Note deleted"),
+            @ApiResponse(responseCode = "404", description = "Note not found")
+    })
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteNote(@PathVariable String id) {
 
@@ -105,8 +133,8 @@ public class NotesController {
     return ResponseEntity.noContent().build();
     }
 
-
-    @GetMapping("/search")
+    @Operation(summary = "Search notes", description = "Searches notes using keywords.")
+    @ApiResponse(responseCode = "200", description = "Search results returned")    @GetMapping("/search")
     public List<NoteDTO> search(@RequestParam("q") String query) {
         return searchService.searchByKeyword(query)
                 .stream()
@@ -114,6 +142,13 @@ public class NotesController {
                 .collect(Collectors.toList());
 }
 
+
+    @Operation(summary = "Export note to YAML",
+            description = "Returns the full YAML-formatted content of a note.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Note exported successfully"),
+            @ApiResponse(responseCode = "404", description = "Note not found")
+    })
     @GetMapping("/export/{id}")
     public ResponseEntity<String> exportNote(@PathVariable String id) {
         String content = service.exportNote(id);
@@ -152,7 +187,10 @@ public class NotesController {
         return dto;
     }
 
-
+    @Operation
+            (summary = "List notes with pagination",
+            description = "Returns a paginated list of notes. Optional sort field may be provided.")
+    @ApiResponse(responseCode = "200", description = "Page returned successfully")
     @GetMapping("/paged")
     public List<NoteDTO> listPaged(
             @RequestParam(defaultValue = "0") int page,

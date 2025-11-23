@@ -2,6 +2,7 @@ package com.zipcodewilmington;
 
 import java.util.Map;
 
+
 public class NoteStatsDTO {
     public int totalNotes;
     public int notesWithTags;
