@@ -66,30 +66,31 @@ public class NotesController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<NoteDTO> updateNote
-            (@PathVariable String id,
-            @RequestBody UpdateNoteRequest req) {
-        
-        Note updatedFields = new Note();
-        NoteMetadata md = new NoteMetadata();
+    public ResponseEntity<NoteDTO> updateNote(
+        @PathVariable String id,
+        @RequestBody UpdateNoteRequest request) {
 
-        md.setTitle(req.title);
-        md.setTags(req.tags);
-        md.setAuthor(req.author);
-        md.setStatus(req.status);
-        md.setPriority(req.priority);
+    Note updatedFields = new Note();
+    NoteMetadata metadata = new NoteMetadata();
 
-        updatedFields.setMetadata(md);
-        updatedFields.setBody(req.body);
+    metadata.setTitle(request.title);
+    metadata.setAuthor(request.author);
+    metadata.setStatus(request.status);
+    metadata.setPriority(request.priority);
+    metadata.setTags(request.tags);
 
-        Note updated = service.updateNote(id, updatedFields);
+    updatedFields.setMetadata(metadata);
+    updatedFields.setBody(request.body);
 
-        if (updated == null) {
-            return ResponseEntity.notFound().build();
-        }
+    Note updated = service.updateNote(id, updatedFields);
 
-        return ResponseEntity.ok(toDTO(updated));
+    if (updated == null) {
+        return ResponseEntity.notFound().build();
     }
+
+    return ResponseEntity.ok(NoteMapper.toDTO(updated));
+}
+
 
 
     @DeleteMapping("/{id}")
@@ -111,15 +112,14 @@ public class NotesController {
                 .collect(Collectors.toList());
 }
 
-@GetMapping("/export/{id}")
-public ResponseEntity<String> exportNote(@PathVariable String id) {
-    String content = service.exportNote(id);
+    @GetMapping("/export/{id}")
+    public ResponseEntity<String> exportNote(@PathVariable String id) {
+        String content = service.exportNote(id);
 
-    return ResponseEntity.ok()
-            .header("Content-Disposition", "attachment; filename=\"" + id + ".note\"")
-            .body(content);
-}
-
+        return ResponseEntity.ok()
+                .header("Content-Disposition", "attachment; filename=\"" + id + ".note\"")
+                .body(content);
+    }
 
 
     private NoteDTO toDTO(Note note) {
@@ -169,4 +169,7 @@ public ResponseEntity<String> exportNote(@PathVariable String id) {
                     .map(NoteMapper::toDTO)
                     .toList();
     }
+
+    
+
 }

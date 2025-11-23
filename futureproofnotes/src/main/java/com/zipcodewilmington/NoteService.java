@@ -36,38 +36,28 @@ public class NoteService {
     }
 
     public Note updateNote(String id, Note updatedFields) {
-        Note existing = repository.loadNoteById(id);
 
-        if (existing == null) {
-            return null;
-        }
-
-        if (updatedFields.getMetadata().getTitle() != null) {
-            existing.getMetadata().setTitle(updatedFields.getMetadata().getTitle());
-        }
-        if (updatedFields.getMetadata().getAuthor() != null) {
-            existing.getMetadata().setAuthor(updatedFields.getMetadata().getAuthor());
-        }
-        if (updatedFields.getMetadata().getStatus() != null) {
-            existing.getMetadata().setStatus(updatedFields.getMetadata().getStatus());
-        }
-        if (updatedFields.getMetadata().getPriority() != null) {
-            existing.getMetadata().setPriority(updatedFields.getMetadata().getPriority());
-        }
-        if (updatedFields.getMetadata().getTags() != null) {
-            existing.getMetadata().setTags(updatedFields.getMetadata().getTags());
-        }
-
-        
-        if (updatedFields.getBody() != null) {
-            existing.setBody(updatedFields.getBody());
-        }
-
-        existing.getMetadata().setModified(LocalDateTime.now(ZoneOffset.UTC));
-
-        return repository.updateNote(existing);
-
+    Note existing = repository.loadNoteById(id);
+    if (existing == null) {
+        return null;
     }
+
+    NoteMetadata existingMeta = existing.getMetadata();
+    NoteMetadata incoming = updatedFields.getMetadata();
+
+    if (incoming.getTitle() != null) existingMeta.setTitle(incoming.getTitle());
+    if (incoming.getAuthor() != null) existingMeta.setAuthor(incoming.getAuthor());
+    if (incoming.getStatus() != null) existingMeta.setStatus(incoming.getStatus());
+    if (incoming.getPriority() != null) existingMeta.setPriority(incoming.getPriority());
+    if (incoming.getTags() != null) existingMeta.setTags(incoming.getTags());
+
+    if (updatedFields.getBody() != null) existing.setBody(updatedFields.getBody());
+
+    existingMeta.setModified(LocalDateTime.now(ZoneOffset.UTC));
+
+    return repository.updateNote(existing);
+}
+
 
     public boolean deleteNote (String id) {
         return repository.deleteNoteById(id);

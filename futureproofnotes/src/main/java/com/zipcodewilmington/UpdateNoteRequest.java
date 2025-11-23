@@ -4,9 +4,10 @@ import java.util.List;
 
 public class UpdateNoteRequest {
     public String title;
-    public List<String> tags;
     public String author;
     public String status;
     public Integer priority;
+    public List<String> tags;
     public String body;
+
 }

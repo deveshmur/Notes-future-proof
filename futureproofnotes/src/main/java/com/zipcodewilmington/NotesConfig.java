@@ -10,12 +10,7 @@ public class NotesConfig {
     public NoteFileParser noteFileParser() {
         return new NoteFileParser();
     }
-
-    @Bean
-    public NoteRepository noteRepository(NoteJpaRepository jpa) {
-        return new NoteRepository(jpa);
-    }
-
+    
     @Bean
     public NoteService noteService(NoteRepository repo, NoteFileParser parser) {
             return new NoteService(repo, parser);
