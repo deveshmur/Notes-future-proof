@@ -22,9 +22,10 @@ public class NotesConfig {
     }
 
     @Bean
-    public NoteService noteService(NoteRepository repository) {
-        return new NoteService(repository);
+    public NoteService noteService(NoteRepository repo, NoteFileParser parser) {
+            return new NoteService(repo, parser);
     }
+
 
     @Bean
     public NoteSearchService noteSearchService(NoteService service) {

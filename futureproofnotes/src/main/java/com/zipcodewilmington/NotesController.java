@@ -1,6 +1,5 @@
 package com.zipcodewilmington;
 
-import org.springframework.cache.interceptor.NameMatchCacheOperationSource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -112,6 +111,16 @@ public class NotesController {
                 .collect(Collectors.toList());
 }
 
+@GetMapping("/export/{id}")
+public ResponseEntity<String> exportNote(@PathVariable String id) {
+    String content = service.exportNote(id);
+
+    return ResponseEntity.ok()
+            .header("Content-Disposition", "attachment; filename=\"" + id + ".note\"")
+            .body(content);
+}
+
+
 
     private NoteDTO toDTO(Note note) {
         NoteDTO dto = new NoteDTO();
@@ -140,4 +149,6 @@ public class NotesController {
 
         return dto;
     }
+
+
 }

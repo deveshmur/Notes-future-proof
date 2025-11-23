@@ -8,9 +8,13 @@ import java.util.List;
 public class NoteService {
     
     private final NoteRepository repository;
+    private final NoteFileParser parser;
 
-     public NoteService(NoteRepository repository) {
+
+     public NoteService(NoteRepository repository, NoteFileParser parser) {
         this.repository = repository;
+        this.parser = parser;
+
     }
 
     public Note createNote(Note note) {
@@ -79,5 +83,13 @@ public class NoteService {
         if (title == null || title.isBlank()) {
             throw new IllegalArgumentException("New notes must have a title.");
         }
+    }
+
+    public String exportNote(String id) {
+        Note note = repository.loadNoteById(id);
+        if (note == null) {
+            throw new IllegalArgumentException("Note not found: " + id);
+        }
+        return parser.toFullNoteString(note);
     }
 }
