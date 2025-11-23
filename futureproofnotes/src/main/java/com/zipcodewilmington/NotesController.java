@@ -95,14 +95,16 @@ public class NotesController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteNote(@PathVariable String id) {
-        boolean deleted = service.deleteNote(id);
 
-        if (!deleted) {
-            return ResponseEntity.notFound().build();
-        }
+    boolean deleted = service.deleteNote(id);
 
-        return ResponseEntity.ok().build();
+    if (!deleted) {
+        return ResponseEntity.notFound().build();
     }
+
+    return ResponseEntity.noContent().build();
+    }
+
 
     @GetMapping("/search")
     public List<NoteDTO> search(@RequestParam("q") String query) {

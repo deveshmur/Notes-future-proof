@@ -31,8 +31,12 @@ public class NoteService {
         return repository.saveNewNote(note);
     }
 
-    public Note readNote (String id) { 
-        return repository.loadNoteById(id);
+    public Note readNote(String id) {
+        Note note = repository.loadNoteById(id);
+        if (note == null) {
+            throw new NoteNotFoundException(id);
+        }
+        return note;
     }
 
     public Note updateNote(String id, Note updatedFields) {
@@ -56,6 +60,7 @@ public class NoteService {
     existingMeta.setModified(LocalDateTime.now(ZoneOffset.UTC));
 
     return repository.updateNote(existing);
+    
 }
 
 
