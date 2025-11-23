@@ -7,18 +7,13 @@ import org.springframework.context.annotation.Configuration;
 public class NotesConfig {
     
     @Bean
-    public FileSystemManagement fileSystemManagement() {
-        return new FileSystemManagement(null);
-    }
-
-    @Bean
     public NoteFileParser noteFileParser() {
         return new NoteFileParser();
     }
 
     @Bean
-    public NoteRepository noteRepository(FileSystemManagement fsm, NoteFileParser parser) {
-        return new NoteRepository(fsm, parser);
+    public NoteRepository noteRepository(NoteJpaRepository jpa) {
+        return new NoteRepository(jpa);
     }
 
     @Bean
@@ -35,6 +30,7 @@ public class NotesConfig {
     @Bean
     public NoteStatsService noteStatsService(NoteService noteService) {
     return new NoteStatsService(noteService);
-}
+    }
+
 
 }

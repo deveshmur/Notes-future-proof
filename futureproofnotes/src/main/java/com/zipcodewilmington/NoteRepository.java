@@ -1,91 +1,61 @@
 package com.zipcodewilmington;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.time.Instant;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
+import org.springframework.stereotype.Repository;
+import org.springframework.data.domain.Pageable;
+
+@Repository
 public class NoteRepository {
 
-    private final FileSystemManagement fileSystemManagement;
-    private final NoteFileParser parser;
+    private final NoteJpaRepository jpa;
 
-    public NoteRepository(FileSystemManagement fileSystemManagement, NoteFileParser parser) {
-        this.fileSystemManagement = fileSystemManagement;
-        this.parser = parser;
-        this.fileSystemManagement.ensureNotesDirectory();
+    public List<Note> loadPagedNotes(Pageable pageable) {
+    return jpa.findAll(pageable)
+              .stream()
+              .map(NoteEntityMapper::toDomain)
+              .toList();
+    }
+    
+    public NoteRepository(NoteJpaRepository jpa) {
+        this.jpa = jpa;
     }
 
-    public List<Note> loadAllNotes() {
-        List<Path> files = fileSystemManagement.listNoteFiles();
-        List<Note> notes = new ArrayList<>();
-
-
-        for (Path file: files) {
-            try {
-                Note note = parser.parse(file);
-                notes.add(note);
-            } catch (Exception e) {
-                System.err.println("Error parsing note: " + file + "... " + e.getMessage());
-            }
-        }
-        return notes;
+    public Note saveNewNote(Note note) {
+        NoteEntity entity = NoteEntityMapper.toEntity(note);
+        NoteEntity saved = jpa.save(entity);
+        return NoteEntityMapper.toDomain(saved);
     }
 
     public Note loadNoteById(String id) {
-        Path path = fileSystemManagement.resolveNotePath(id);
-
-        if (!Files.exists(path)) {
-            return null;
-        }
-
-        return parser.parse(path);
-    }
-
-
-    public Note saveNewNote (Note note) {
-        String id = generateNoteId();
-        note.setId(id);
-
-        Path filePath = fileSystemManagement.resolveNotePath(id);
-        writeNoteToFile(note, filePath);
-
-        return note;
+        Optional<NoteEntity> found = jpa.findById(id);
+        return found.map(NoteEntityMapper::toDomain).orElse(null);
     }
 
     public Note updateNote(Note note) {
-        if (note.getId() == null || note.getId().isBlank()) {
-            throw new RuntimeException("Can't update note without valid ID");
-        }
-
-        Path filePath = fileSystemManagement.resolveNotePath(note.getId());
-        writeNoteToFile(note, filePath);
-
-        return note;
-
+        NoteEntity entity = NoteEntityMapper.toEntity(note);
+        NoteEntity saved = jpa.save(entity);
+        return NoteEntityMapper.toDomain(saved);
     }
- 
+
     public boolean deleteNoteById(String id) {
-        Path path = fileSystemManagement.resolveNotePath(id);
-        return fileSystemManagement.deleteFile(path);
-    }
-
-    private void writeNoteToFile(Note note, Path filePath) {
-        String serialized = parser.serialize(note);
-
-        try {
-            Files.writeString(filePath, serialized, StandardCharsets.UTF_8);
-        } catch (IOException e) {
-            throw new RuntimeException("Failed to write note to disk: " + filePath, e);
+        if (!jpa.existsById(id)) {
+            return false;
         }
+        jpa.deleteById(id);
+        return true;
     }
 
-    private String generateNoteId() {
-        long now = Instant.now().toEpochMilli();
-        long random = (long)(Math.random() * 1_000_000);
-        return "n" + now + "_" + random;
+    public List<Note> loadAllNotes() {
+        return jpa.findAll()
+                .stream()
+                .map(NoteEntityMapper::toDomain)
+                .toList();
     }
+
+    public long count() {
+        return jpa.count();
+    }
+    
 }

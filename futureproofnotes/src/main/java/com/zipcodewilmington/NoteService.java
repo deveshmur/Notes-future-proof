@@ -4,6 +4,10 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
 
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+
 
 public class NoteService {
     
@@ -73,6 +77,14 @@ public class NoteService {
         return repository.loadAllNotes();
     }
 
+    public String exportNote(String id) {
+        Note note = repository.loadNoteById(id);
+        if (note == null) {
+            throw new IllegalArgumentException("Note not found: " + id);
+        }
+        return parser.toFullNoteString(note);
+    }
+
     public List<Note> listNotesPaged(int page, int size) {
         List<Note> all = listNotes();
 
@@ -88,27 +100,22 @@ public class NoteService {
 
     public List<Note> listNotesPagedAndSorted(int page, int size, String sortField) {
 
-        List<Note> all = listNotes();
+    Sort sort;
 
-        if ("created".equalsIgnoreCase(sortField)) {
-            all.sort((a, b) -> a.getMetadata().getCreated().compareTo(b.getMetadata().getCreated()));
-        } else if ("modified".equalsIgnoreCase(sortField)) {
-            all.sort((a, b) -> a.getMetadata().getModified().compareTo(b.getMetadata().getModified()));
-        } else if ("title".equalsIgnoreCase(sortField)) {
-            all.sort((a, b) -> a.getMetadata().getTitle().compareToIgnoreCase(b.getMetadata().getTitle()));
-        }
-
-        int from = page * size;
-        int to = Math.min(from + size, all.size());
-
-        if (from >= all.size()) {
-            return List.of();
-        }
-
-        return all.subList(from, to);
+    if ("created".equalsIgnoreCase(sortField)) {
+        sort = Sort.by("metadata.created").ascending();
+    } else if ("modified".equalsIgnoreCase(sortField)) {
+        sort = Sort.by("metadata.modified").ascending();
+    } else if ("title".equalsIgnoreCase(sortField)) {
+        sort = Sort.by("metadata.title").ascending();
+    } else {
+        sort = Sort.unsorted();
     }
 
+    Pageable pageable = PageRequest.of(page, size, sort);
 
+    return repository.loadPagedNotes(pageable);
+}
 
 
     private void validateNewNote(Note note) {
@@ -120,13 +127,5 @@ public class NoteService {
         if (title == null || title.isBlank()) {
             throw new IllegalArgumentException("New notes must have a title.");
         }
-    }
-
-    public String exportNote(String id) {
-        Note note = repository.loadNoteById(id);
-        if (note == null) {
-            throw new IllegalArgumentException("Note not found: " + id);
-        }
-        return parser.toFullNoteString(note);
     }
 }
