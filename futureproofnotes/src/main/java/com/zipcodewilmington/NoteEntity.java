@@ -1,9 +1,6 @@
 package com.zipcodewilmington;
 
 import jakarta.persistence.*;
-import java.time.LocalDateTime;
-import java.util.List;
-
 
 @Entity
 @Table(name = "notes")
@@ -18,7 +15,7 @@ public class NoteEntity {
     @Column(columnDefinition = "TEXT")
     private String body;
 
-     public String getId() {
+    public String getId() {
         return id;
     }
 
@@ -41,5 +38,4 @@ public class NoteEntity {
     public void setBody(String body) {
         this.body = body;
     }
-    
 }

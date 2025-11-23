@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Embeddable
 public class NoteMetadataEmbeddable {
     
     private String title;
@@ -14,7 +15,7 @@ public class NoteMetadataEmbeddable {
     private LocalDateTime created;
     private LocalDateTime modified;
 
-     @ElementCollection
+    @ElementCollection
     private List<String> tags;
 
      public String getTitle() {
